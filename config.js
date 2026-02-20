@@ -1,6 +1,9 @@
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const home = homedir();
 
@@ -13,7 +16,7 @@ const defaults = {
   dataDir: join(home, '.betterclaw'),
   sessionsDir: join(home, '.betterclaw/sessions'),
   workspaceDir: join(home, '.betterclaw/workspace'),
-  contextsDir: join(import.meta.dirname, 'contexts'),
+  contextsDir: join(__dirname, 'contexts'),
 
   // Vault folders (PARA + agent)
   para: {
