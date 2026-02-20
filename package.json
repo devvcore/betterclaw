@@ -1,0 +1,15 @@
+{
+  "name": "betterclaw",
+  "version": "0.1.0",
+  "description": "Context-first AI assistant framework. Obsidian-native, model-agnostic.",
+  "type": "module",
+  "bin": {
+    "claw": "./bin/claw"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  }
+}

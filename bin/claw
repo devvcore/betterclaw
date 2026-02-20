@@ -1,0 +1,209 @@
+#!/usr/bin/env -S node --use-system-ca
+
+import { startCLI } from '../lib/channels/cli.js';
+import { runHeartbeatChannel } from '../lib/channels/heartbeat-channel.js';
+import { listContexts, loadContext, createContext } from '../lib/context.js';
+import { search } from '../lib/search.js';
+import { Session } from '../lib/session.js';
+import { setCredential, listCredentials } from '../lib/credentials.js';
+import { startPanel } from '../lib/panel/server.js';
+import { runInit } from '../lib/init.js';
+
+const [,, command, ...args] = process.argv;
+
+async function main() {
+  switch (command) {
+    case 'init':
+      await runInit();
+      break;
+
+    case 'panel':
+      startPanel({ port: args.includes('--port') ? parseInt(args[args.indexOf('--port') + 1]) : 3333 });
+      break;
+
+    case 'chat':
+      await startCLI({ new: args.includes('--new') });
+      break;
+
+    case 'heartbeat':
+      await runHeartbeatChannel();
+      break;
+
+    case 'gateway': {
+      const sub = args[0];
+      const { startGateway, installLaunchAgent, uninstallLaunchAgent, gatewayStatus, gatewayLogs } = await import('../lib/gateway.js');
+      switch (sub) {
+        case 'install':
+          installLaunchAgent();
+          break;
+        case 'uninstall':
+          uninstallLaunchAgent();
+          break;
+        case 'status':
+          gatewayStatus();
+          break;
+        case 'logs':
+          gatewayLogs();
+          break;
+        default:
+          await startGateway({ port: args.includes('--port') ? parseInt(args[args.indexOf('--port') + 1]) : 3333 });
+      }
+      break;
+    }
+
+    case 'setup': {
+      const { runSetup } = await import('../lib/setup.js');
+      await runSetup(args[0]);
+      break;
+    }
+
+    case 'telegram': {
+      const sub = args[0];
+      if (sub === 'setup') {
+        const { runSetup } = await import('../lib/setup.js');
+        await runSetup('telegram');
+      } else {
+        console.log('Usage: claw telegram setup  (or: claw setup telegram)');
+      }
+      break;
+    }
+
+    case 'ctx': {
+      const sub = args[0];
+      switch (sub) {
+        case 'list': {
+          const ctxs = await listContexts();
+          if (ctxs.length === 0) { console.log('No contexts found.'); break; }
+          console.log('Contexts:');
+          for (const ctx of ctxs) {
+            const tag = ctx.alwaysLoad ? ' (auto)' : '';
+            console.log(`  ${ctx.name}  ~${ctx.tokens} tok${tag}`);
+          }
+          break;
+        }
+        case 'show': {
+          const name = args[1];
+          if (!name) { console.error('Usage: claw ctx show <name>'); break; }
+          const ctx = await loadContext(name);
+          if (ctx) {
+            console.log(ctx.content);
+          } else {
+            console.error(`Context '${name}' not found`);
+          }
+          break;
+        }
+        case 'new': {
+          const name = args[1];
+          if (!name) { console.error('Usage: claw ctx new <name>'); break; }
+          const path = await createContext(name);
+          console.log(`Created: ${path}`);
+          break;
+        }
+        default:
+          console.log('Usage: claw ctx <list|show|new> [name]');
+      }
+      break;
+    }
+
+    case 'search': {
+      const query = args.join(' ');
+      if (!query) { console.error('Usage: claw search <query>'); break; }
+      const results = await search(query);
+      if (results.length === 0) {
+        console.log('No matches.');
+      } else {
+        for (const r of results) {
+          console.log(`\x1b[33m${r.file}\x1b[0m`);
+          for (const m of r.matches) {
+            console.log(`  L${m.line}: ${m.text}`);
+          }
+        }
+      }
+      break;
+    }
+
+    case 'sessions': {
+      const all = await Session.list();
+      if (all.length === 0) { console.log('No sessions.'); break; }
+      for (const s of all) {
+        console.log(`${s.id}  ${s.messageCount} msgs  ${s.updated?.slice(0, 16) || ''}`);
+        if (s.lastMessage) console.log(`  ${s.lastMessage}`);
+      }
+      break;
+    }
+
+    case 'creds': {
+      const sub = args[0];
+      if (sub === 'set') {
+        const name = args[1];
+        const value = args[2];
+        if (!name || !value) { console.error('Usage: claw creds set <name> <value>'); break; }
+        await setCredential(name, value);
+        console.log(`Stored: ${name}`);
+      } else if (sub === 'list') {
+        const creds = await listCredentials();
+        for (const c of creds) {
+          console.log(`  ${c.name}: ${c.configured ? '✓' : '✗'}`);
+        }
+      } else {
+        console.log('Usage: claw creds <list|set> [name] [value]');
+      }
+      break;
+    }
+
+    case 'model': {
+      const { showModels, setModel } = await import('../lib/model-cmd.js');
+      const sub = args[0];
+      if (sub === 'set') {
+        const role = args[1];
+        const spec = args[2];
+        if (!role || !spec) {
+          console.error('Usage: claw model set <role> <provider/model>');
+          console.error('  Roles: router, quick, default, deep');
+          console.error('  Example: claw model set default anthropic/claude-sonnet-4-5-20250514');
+          console.error('  Example: claw model set default openrouter/anthropic/claude-sonnet-4-5-20250514');
+          break;
+        }
+        await setModel(role, spec);
+      } else {
+        showModels();
+      }
+      break;
+    }
+
+    case 'version':
+      console.log('betterclaw v0.1.0');
+      break;
+
+    default:
+      console.log(`betterclaw v0.1.0
+
+Usage:
+  claw init                   Interactive setup wizard
+  claw setup                  Set up capabilities (telegram, email, search...)
+  claw setup <name>           Set up a specific capability
+  claw gateway                Start gateway (panel + telegram + heartbeat + crons)
+  claw gateway install        Install as macOS LaunchAgent (auto-start)
+  claw gateway uninstall      Remove LaunchAgent
+  claw gateway status         Check if gateway is running
+  claw gateway logs           Tail gateway logs
+  claw panel [--port N]       Open control panel (default :3333)
+  claw chat [--new]           Interactive chat with Raya
+  claw heartbeat              Run heartbeat check (for cron)
+  claw model                  Show current model config
+  claw model set <role> <p/m> Change a model (e.g. default anthropic/claude-sonnet-4-5-20250514)
+  claw ctx list               List available contexts
+  claw ctx show <name>        Show context content
+  claw ctx new <name>         Create a new context file
+  claw search <query>         Search Obsidian vault
+  claw sessions               List saved sessions
+  claw creds list             Show configured credentials
+  claw creds set <key> <val>  Store a credential in Keychain
+  claw version                Show version`);
+  }
+}
+
+main().catch(err => {
+  console.error(err.message);
+  process.exit(1);
+});

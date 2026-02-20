@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BetterClaw Control Panel</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+  header {
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  header h1 { font-size: 18px; color: #e94560; font-weight: 700; }
+  nav { display: flex; gap: 4px; }
+  nav button {
+    background: transparent;
+    border: none;
+    color: #8888aa;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    font-size: 14px;
+    transition: all .15s;
+  }
+  nav button:hover { color: #e0e0e0; background: #1a1a2e; }
+  nav button.active { color: #e94560; background: #1a1a2e; border-bottom: 2px solid #e94560; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* Cards */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .card h3 { font-size: 12px; text-transform: uppercase; color: #8888aa; margin-bottom: 8px; letter-spacing: .5px; }
+  .card .value { font-size: 28px; font-weight: 700; color: #e94560; }
+  .card .sub { font-size: 12px; color: #8888aa; margin-top: 4px; }
+
+  /* Journal */
+  .journal-box {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* Forms */
+  .form-section { margin-bottom: 24px; }
+  .form-section h3 {
+    font-size: 14px;
+    color: #e94560;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #0f3460;
+  }
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .form-row label {
+    min-width: 140px;
+    font-size: 13px;
+    color: #8888aa;
+  }
+  input, select, textarea {
+    background: #0f3460;
+    border: 1px solid #1a1a4e;
+    color: #e0e0e0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #e94560;
+  }
+  input[type="text"], input[type="number"], input[type="password"] { flex: 1; }
+  select { min-width: 120px; }
+
+  /* Buttons */
+  .btn {
+    background: #e94560;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .15s;
+  }
+  .btn:hover { background: #c73e54; }
+  .btn.secondary { background: #0f3460; }
+  .btn.secondary:hover { background: #16213e; }
+  .btn.danger { background: #8b0000; }
+  .btn.danger:hover { background: #a00; }
+  .btn.small { padding: 4px 12px; font-size: 12px; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge.ok { background: #1b4332; color: #52b788; }
+  .badge.no { background: #3d0000; color: #e94560; }
+
+  /* Credentials table */
+  .cred-table { width: 100%; border-collapse: collapse; }
+  .cred-table th {
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #8888aa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #0f3460;
+  }
+  .cred-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #0f346033;
+    font-size: 13px;
+  }
+  .cred-table .cred-input {
+    display: none;
+    gap: 8px;
+    align-items: center;
+  }
+  .cred-table .cred-input.show { display: flex; }
+
+  /* Toggle */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+  }
+  .toggle input { display: none; }
+  .toggle .slider {
+    position: absolute;
+    inset: 0;
+    background: #0f3460;
+    border-radius: 12px;
+    transition: .2s;
+  }
+  .toggle .slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: #8888aa;
+    border-radius: 50%;
+    transition: .2s;
+  }
+  .toggle input:checked + .slider { background: #1b4332; }
+  .toggle input:checked + .slider::before { transform: translateX(20px); background: #52b788; }
+
+  /* Results */
+  .result-box {
+    background: #0f3460;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    display: none;
+  }
+  .result-box.show { display: block; }
+
+  /* Chat */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 120px);
+  }
+  .chat-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #0f3460;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .chat-topbar select { font-size: 12px; }
+  .context-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .pill {
+    background: #0f3460;
+    border: 1px solid #1a1a4e;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pill .x { color: #e94560; font-weight: bold; }
+  .pill.add { border-style: dashed; color: #8888aa; }
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .msg {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .msg.user {
+    align-self: flex-end;
+    background: #0f3460;
+    border-bottom-right-radius: 4px;
+  }
+  .msg.assistant {
+    align-self: flex-start;
+    background: #2d1b4e;
+    border-bottom-left-radius: 4px;
+  }
+  .msg code {
+    background: #1a1a2e;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: 'SF Mono', monospace;
+    font-size: 13px;
+  }
+  .msg pre {
+    background: #1a1a2e;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 6px 0;
+    overflow-x: auto;
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+  }
+  .chat-input {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #0f3460;
+  }
+  .chat-input textarea {
+    flex: 1;
+    resize: none;
+    height: 44px;
+    padding: 10px;
+    font-size: 14px;
+  }
+  .typing { color: #8888aa; font-style: italic; font-size: 13px; padding: 4px 0; }
+  .tool-activity {
+    font-size: 12px;
+    color: #8888aa;
+    padding: 4px 8px;
+    margin: 4px 0;
+    border-left: 2px solid #0f3460;
+    font-family: 'SF Mono', monospace;
+  }
+  .tool-activity .tool-name { color: #e94560; }
+  .tool-activity .tool-result { color: #52b788; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1b4332;
+    color: #52b788;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Loading */
+  .spinner::after { content: ''; display: inline-block; width: 12px; height: 12px; border: 2px solid #8888aa; border-top-color: #e94560; border-radius: 50%; animation: spin .6s linear infinite; margin-left: 8px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Fullwidth for chat */
+  .tab-chat main, .tab-chat .chat-container { max-width: 100%; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 12px;
+    width: 520px;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #0f3460;
+  }
+  .modal-header h3 { font-size: 14px; color: #e94560; }
+  .modal-header .close { background: none; border: none; color: #8888aa; cursor: pointer; font-size: 18px; }
+  .modal-path {
+    padding: 8px 18px;
+    font-family: 'SF Mono', monospace;
+    font-size: 12px;
+    color: #8888aa;
+    background: #1a1a2e;
+    border-bottom: 1px solid #0f3460;
+    word-break: break-all;
+  }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  .folder-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 13px;
+    gap: 8px;
+    transition: background .1s;
+  }
+  .folder-item:hover { background: #1a1a2e; }
+  .folder-item .icon { color: #e94560; width: 16px; }
+  .folder-item.parent { color: #8888aa; }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid #0f3460;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>BetterClaw</h1>
+  <nav>
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="chat">Chat</button>
+    <button data-tab="config">Config</button>
+    <button data-tab="credentials">Credentials</button>
+    <button data-tab="channels">Gateway</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab active">
+  <div class="card-grid">
+    <div class="card"><h3>Gateway</h3><div class="value" id="stat-gateway">--</div><div class="sub" id="stat-gateway-sub"></div></div>
+    <div class="card"><h3>Heartbeat</h3><div class="value" id="stat-hb">--</div><div class="sub" id="stat-hb-sub"></div></div>
+    <div class="card"><h3>Sessions</h3><div class="value" id="stat-sessions">--</div></div>
+    <div class="card"><h3>Credentials</h3><div class="value" id="stat-creds">--</div><div class="sub" id="stat-creds-sub"></div></div>
+    <div class="card"><h3>Crons</h3><div class="value" id="stat-crons">--</div><div class="sub" id="stat-crons-sub"></div></div>
+    <div class="card"><h3>Skills</h3><div class="value" id="stat-skills">--</div></div>
+    <div class="card"><h3>Custom Tools</h3><div class="value" id="stat-tools">--</div></div>
+  </div>
+  <h3 style="color:#e94560;margin-bottom:12px;">Today's Journal</h3>
+  <div class="journal-box" id="journal-content">Loading...</div>
+</div>
+
+<!-- CHAT -->
+<div id="tab-chat" class="tab">
+  <div class="chat-container">
+    <div class="chat-topbar">
+      <button class="btn small" id="chat-new">New Session</button>
+      <select id="chat-session-picker"><option value="">Select session...</option></select>
+      <div class="context-pills" id="chat-context-pills"></div>
+    </div>
+    <div class="messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <textarea id="chat-input" placeholder="Send a message..." rows="1"></textarea>
+      <button class="btn" id="chat-send">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div id="tab-config" class="tab">
+  <form id="config-form">
+    <div class="form-section">
+      <h3>Paths</h3>
+      <div class="form-row"><label>Vault Path</label><input type="text" name="vault" id="cfg-vault"><button type="button" class="btn small secondary" id="cfg-vault-browse">Browse</button></div>
+      <div class="form-row"><label>Daily Notes Dir</label><input type="text" name="dailyNotesDir" id="cfg-dailyNotesDir"></div>
+      <div class="form-row"><label>Inbox Dir</label><input type="text" name="inboxDir" id="cfg-inboxDir"></div>
+    </div>
+    <div class="form-section">
+      <h3>Models</h3>
+      <div id="cfg-models"></div>
+    </div>
+    <div class="form-section">
+      <h3>Compaction</h3>
+      <div class="form-row"><label>Keep Recent</label><input type="number" name="compaction.keepRecentMessages" id="cfg-keepRecent"></div>
+      <div class="form-row"><label>Max Before Compact</label><input type="number" name="compaction.maxMessagesBeforeCompact" id="cfg-maxCompact"></div>
+    </div>
+    <div class="form-section">
+      <h3>Budget</h3>
+      <div class="form-row"><label>Daily Limit (USD)</label><input type="number" step="0.1" name="budget.dailyLimit" id="cfg-dailyLimit"></div>
+      <div class="form-row"><label>Warn At (USD)</label><input type="number" step="0.1" name="budget.warnAt" id="cfg-warnAt"></div>
+    </div>
+    <button type="submit" class="btn">Save Config</button>
+  </form>
+</div>
+
+<!-- CREDENTIALS -->
+<div id="tab-credentials" class="tab">
+  <table class="cred-table">
+    <thead><tr><th>Key</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="cred-tbody"></tbody>
+  </table>
+</div>
+
+<!-- CHANNELS -->
+<div id="tab-channels" class="tab">
+  <!-- Gateway Status -->
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Gateway</h3>
+    <div id="gw-status" style="margin-top:12px;font-size:13px;line-height:1.8;"></div>
+  </div>
+
+  <!-- Heartbeat Config -->
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Heartbeat</h3>
+    <div class="form-row" style="margin-top:12px;">
+      <label>Interval (min)</label>
+      <input type="number" id="hb-interval" style="width:80px;" min="1">
+    </div>
+    <div class="form-row">
+      <label>Sources</label>
+      <div style="display:flex;gap:12px;">
+        <label><input type="checkbox" id="hb-src-inbox" value="inbox"> Inbox</label>
+        <label><input type="checkbox" id="hb-src-tasks" value="tasks"> Tasks</label>
+        <label><input type="checkbox" id="hb-src-github" value="github"> GitHub</label>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn" id="hb-save">Save Heartbeat Settings</button>
+      <button class="btn secondary" id="hb-run">Run Now</button>
+    </div>
+    <div class="result-box" id="hb-result"></div>
+  </div>
+
+  <!-- Cron Jobs -->
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Cron Jobs</h3>
+    <div id="crons-list" style="margin-top:12px;font-size:13px;"></div>
+  </div>
+
+  <!-- Skills -->
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Skills</h3>
+    <div id="skills-list" style="margin-top:12px;font-size:13px;"></div>
+  </div>
+
+  <!-- Custom Tools -->
+  <div class="card" style="margin-bottom:16px;">
+    <h3>Custom Tools</h3>
+    <div id="tools-list" style="margin-top:12px;font-size:13px;"></div>
+  </div>
+</div>
+
+</main>
+
+<!-- Folder Browser Modal -->
+<div class="modal-overlay" id="browse-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Browse for Folder</h3>
+      <button class="close" id="browse-close">&times;</button>
+    </div>
+    <div id="browse-bookmarks" style="display:flex;gap:6px;padding:8px 18px;flex-wrap:wrap;border-bottom:1px solid #0f3460;"></div>
+    <div class="modal-path" id="browse-path"></div>
+    <div class="modal-body" id="browse-list"></div>
+    <div class="modal-footer">
+      <button class="btn secondary" id="browse-cancel">Cancel</button>
+      <button class="btn" id="browse-select">Select This Folder</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// --- Tabs ---
+$$('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('nav button').forEach(b => b.classList.remove('active'));
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    $(`#tab-${btn.dataset.tab}`).classList.add('active');
+    if (btn.dataset.tab === 'dashboard') loadDashboard();
+    if (btn.dataset.tab === 'config') loadConfig();
+    if (btn.dataset.tab === 'credentials') loadCredentials();
+    if (btn.dataset.tab === 'channels') loadChannels();
+    if (btn.dataset.tab === 'chat') initChat();
+  });
+});
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(`/api/${path}`, {
+    method: opts.method || 'GET',
+    headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (opts.stream) return res;
+  return res.json();
+}
+
+// --- Dashboard ---
+async function loadDashboard() {
+  const data = await api('status');
+  $('#stat-sessions').textContent = data.sessions;
+  const configured = data.credentials.filter(c => c.configured).length;
+  $('#stat-creds').textContent = `${configured}/${data.credentials.length}`;
+  $('#stat-creds-sub').textContent = data.credentials.filter(c => !c.configured).map(c => c.name).join(', ') || 'All set';
+
+  // Gateway status
+  if (data.gateway?.running) {
+    $('#stat-gateway').textContent = 'Running';
+    $('#stat-gateway').style.color = '#52b788';
+    const upMin = data.gateway.startedAt ? Math.floor((Date.now() - new Date(data.gateway.startedAt).getTime()) / 60000) : 0;
+    $('#stat-gateway-sub').textContent = upMin > 60 ? `Up ${Math.floor(upMin/60)}h ${upMin%60}m` : `Up ${upMin}m`;
+  } else {
+    $('#stat-gateway').textContent = 'Stopped';
+    $('#stat-gateway').style.color = '#e94560';
+    $('#stat-gateway-sub').textContent = '';
+  }
+
+  // Heartbeat
+  const hbCount = data.gateway?.heartbeatCount || 0;
+  $('#stat-hb').textContent = hbCount;
+  $('#stat-hb').style.color = '#e94560';
+  const lastHb = data.gateway?.lastHeartbeat || data.heartbeat?.lastRun;
+  if (lastHb) {
+    const ago = Math.floor((Date.now() - new Date(lastHb).getTime()) / 60000);
+    $('#stat-hb-sub').textContent = `Last: ${ago}m ago · every ${data.heartbeat?.intervalMinutes || 15}m`;
+  } else {
+    $('#stat-hb-sub').textContent = `Every ${data.heartbeat?.intervalMinutes || 15}m · not run yet`;
+  }
+
+  // Crons
+  const cronData = data.crons || {};
+  $('#stat-crons').textContent = cronData.enabled || 0;
+  $('#stat-crons-sub').textContent = cronData.total ? `${cronData.total} total` : '';
+
+  // Skills & Tools
+  $('#stat-skills').textContent = data.skills || 0;
+  $('#stat-tools').textContent = data.customTools || 0;
+
+  $('#journal-content').textContent = data.journal || 'No journal entry for today.';
+}
+
+// --- Config ---
+const MODEL_ROLES = ['router', 'quick', 'default', 'deep'];
+const PROVIDERS = ['anthropic', 'ollama', 'openai', 'openrouter', 'together', 'groq', 'generic'];
+
+async function loadConfig() {
+  const data = await api('config');
+  const c = data.current;
+  $('#cfg-vault').value = c.vault || '';
+  $('#cfg-dailyNotesDir').value = c.dailyNotesDir || '';
+  $('#cfg-inboxDir').value = c.inboxDir || '';
+  $('#cfg-keepRecent').value = c.compaction?.keepRecentMessages ?? '';
+  $('#cfg-maxCompact').value = c.compaction?.maxMessagesBeforeCompact ?? '';
+  $('#cfg-dailyLimit').value = c.budget?.dailyLimit ?? '';
+  $('#cfg-warnAt').value = c.budget?.warnAt ?? '';
+
+  // Models
+  const container = $('#cfg-models');
+  container.innerHTML = '';
+  for (const role of MODEL_ROLES) {
+    const m = c.models?.[role] || {};
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    row.innerHTML = `
+      <label>${role}</label>
+      <select data-role="${role}" data-field="provider">
+        ${PROVIDERS.map(p => `<option value="${p}" ${m.provider === p ? 'selected' : ''}>${p}</option>`).join('')}
+      </select>
+      <input type="text" data-role="${role}" data-field="model" value="${m.model || ''}" placeholder="model name">
+    `;
+    container.appendChild(row);
+  }
+}
+
+$('#config-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const body = {};
+  // Paths
+  const vault = $('#cfg-vault').value.trim();
+  if (vault) body.vault = vault;
+  const dailyNotesDir = $('#cfg-dailyNotesDir').value.trim();
+  if (dailyNotesDir) body.dailyNotesDir = dailyNotesDir;
+  const inboxDir = $('#cfg-inboxDir').value.trim();
+  if (inboxDir) body.inboxDir = inboxDir;
+  // Models
+  body.models = {};
+  for (const role of MODEL_ROLES) {
+    const provider = $(`select[data-role="${role}"][data-field="provider"]`).value;
+    const model = $(`input[data-role="${role}"][data-field="model"]`).value.trim();
+    body.models[role] = { provider, model };
+  }
+  // Compaction
+  body.compaction = {
+    keepRecentMessages: parseInt($('#cfg-keepRecent').value) || 10,
+    maxMessagesBeforeCompact: parseInt($('#cfg-maxCompact').value) || 30,
+  };
+  // Budget
+  body.budget = {
+    dailyLimit: parseFloat($('#cfg-dailyLimit').value) || 2.0,
+    warnAt: parseFloat($('#cfg-warnAt').value) || 1.5,
+  };
+  await api('config', { method: 'POST', body });
+  toast('Config saved');
+});
+
+// --- Credentials ---
+async function loadCredentials() {
+  const creds = await api('creds');
+  const tbody = $('#cred-tbody');
+  tbody.innerHTML = '';
+  for (const c of creds) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:monospace;">${c.name}</td>
+      <td><span class="badge ${c.configured ? 'ok' : 'no'}">${c.configured ? 'Configured' : 'Not Set'}</span></td>
+      <td>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn small secondary cred-set-btn" data-name="${c.name}">Set</button>
+          ${c.configured ? `<button class="btn small danger cred-rm-btn" data-name="${c.name}">Remove</button>` : ''}
+        </div>
+        <div class="cred-input" id="cred-input-${c.name}">
+          <input type="password" placeholder="Enter value..." id="cred-val-${c.name}">
+          <button class="btn small cred-save-btn" data-name="${c.name}">Save</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // Set button toggles input
+  $$('.cred-set-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = $(`#cred-input-${btn.dataset.name}`);
+      input.classList.toggle('show');
+      if (input.classList.contains('show')) {
+        input.querySelector('input').focus();
+      }
+    });
+  });
+
+  // Save credential
+  $$('.cred-save-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const name = btn.dataset.name;
+      const value = $(`#cred-val-${name}`).value;
+      if (!value) return;
+      await api(`creds/${name}`, { method: 'POST', body: { value } });
+      toast(`Saved: ${name}`);
+      loadCredentials();
+    });
+  });
+
+  // Remove credential
+  $$('.cred-rm-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await api(`creds/${btn.dataset.name}`, { method: 'DELETE' });
+      toast(`Removed: ${btn.dataset.name}`);
+      loadCredentials();
+    });
+  });
+}
+
+// --- Channels ---
+async function loadChannels() {
+  const [gw, cfg, skills, tools, crons] = await Promise.all([
+    api('gateway'),
+    api('config'),
+    api('skills'),
+    api('custom-tools'),
+    api('crons'),
+  ]);
+
+  // Gateway status
+  const gwDiv = $('#gw-status');
+  if (gw.running) {
+    const upSec = gw.uptime || 0;
+    const upStr = upSec > 3600 ? `${Math.floor(upSec/3600)}h ${Math.floor((upSec%3600)/60)}m` : `${Math.floor(upSec/60)}m`;
+    const cronInfo = gw.crons ? ` · Crons: ${gw.crons.enabled}/${gw.crons.total} active` : '';
+    gwDiv.innerHTML = `
+      <span class="badge ok">Running</span> PID ${gw.pid} · Up ${upStr}<br>
+      Heartbeat: every ${gw.heartbeat.intervalMinutes}m · ${gw.heartbeat.count} runs${gw.heartbeat.lastRun ? ` · last ${new Date(gw.heartbeat.lastRun).toLocaleTimeString()}` : ''}<br>
+      Telegram: ${gw.telegram ? '<span class="badge ok">Connected</span>' : '<span class="badge no">Off</span>'}${cronInfo}
+    `;
+  } else {
+    gwDiv.innerHTML = '<span class="badge no">Not Running</span> — start with <code>claw gateway</code>';
+  }
+
+  // Heartbeat config
+  const hb = cfg.current?.heartbeat || {};
+  $('#hb-interval').value = hb.intervalMinutes || 15;
+  const sources = hb.sources || ['inbox', 'tasks', 'github'];
+  $('#hb-src-inbox').checked = sources.includes('inbox');
+  $('#hb-src-tasks').checked = sources.includes('tasks');
+  $('#hb-src-github').checked = sources.includes('github');
+
+  // Crons
+  const cronsDiv = $('#crons-list');
+  if (crons.length === 0) {
+    cronsDiv.innerHTML = '<span style="color:#8888aa;">No cron jobs. Raya can create them with create_cron.</span>';
+  } else {
+    cronsDiv.innerHTML = crons.map(c => {
+      const status = c.enabled ? '<span class="badge ok">On</span>' : '<span class="badge no">Off</span>';
+      const last = c.lastRun ? `last: ${new Date(c.lastRun).toLocaleString()}` : 'never run';
+      return `<div style="padding:6px 0;border-bottom:1px solid #0f346033;">
+        ${status} <strong>${c.name}</strong> <span style="color:#8888aa;font-family:monospace;font-size:12px;">${c.schedule}</span><br>
+        <span style="color:#8888aa;font-size:12px;">${c.prompt.slice(0, 100)}${c.prompt.length > 100 ? '...' : ''}</span><br>
+        <span style="color:#8888aa;font-size:11px;">${last} · ${c.runCount || 0} runs · ID: ${c.id}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Skills
+  const skillsDiv = $('#skills-list');
+  if (skills.length === 0) {
+    skillsDiv.innerHTML = '<span style="color:#8888aa;">No skills yet. Raya can create them.</span>';
+  } else {
+    skillsDiv.innerHTML = skills.map(s =>
+      `<div style="padding:4px 0;"><strong>${s.name}</strong> <span style="color:#8888aa;">— ${s.description || 'no description'}</span></div>`
+    ).join('');
+  }
+
+  // Custom tools
+  const toolsDiv = $('#tools-list');
+  if (tools.length === 0) {
+    toolsDiv.innerHTML = '<span style="color:#8888aa;">No custom tools yet. Raya can create them.</span>';
+  } else {
+    toolsDiv.innerHTML = tools.map(t =>
+      `<div style="padding:4px 0;"><strong>${t.name}</strong> <span style="color:#8888aa;">— ${t.description || ''}</span></div>`
+    ).join('');
+  }
+}
+
+$('#hb-save').addEventListener('click', async () => {
+  const intervalMinutes = parseInt($('#hb-interval').value) || 15;
+  const sources = [];
+  if ($('#hb-src-inbox').checked) sources.push('inbox');
+  if ($('#hb-src-tasks').checked) sources.push('tasks');
+  if ($('#hb-src-github').checked) sources.push('github');
+
+  await api('config', { method: 'POST', body: { heartbeat: { intervalMinutes, sources } } });
+  toast('Heartbeat settings saved (gateway hot-reloaded)');
+  loadChannels();
+});
+
+$('#hb-run').addEventListener('click', async () => {
+  const box = $('#hb-result');
+  box.textContent = 'Running heartbeat...';
+  box.classList.add('show');
+  try {
+    const result = await api('heartbeat/run', { method: 'POST' });
+    box.textContent = JSON.stringify(result, null, 2);
+  } catch (err) {
+    box.textContent = `Error: ${err.message}`;
+  }
+});
+
+// --- Chat ---
+let chatSessionId = null;
+let chatContexts = [];
+
+async function initChat() {
+  // Load sessions into picker
+  const sessions = await api('sessions');
+  const picker = $('#chat-session-picker');
+  picker.innerHTML = '<option value="">Select session...</option>';
+  for (const s of sessions) {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = `${s.id} (${s.messageCount} msgs)`;
+    if (s.id === chatSessionId) opt.selected = true;
+    picker.appendChild(opt);
+  }
+  updateContextPills();
+}
+
+$('#chat-new').addEventListener('click', async () => {
+  const data = await api('chat/new', { method: 'POST' });
+  chatSessionId = data.id;
+  chatContexts = [];
+  $('#chat-messages').innerHTML = '';
+  toast(`New session: ${data.id}`);
+  initChat();
+});
+
+$('#chat-session-picker').addEventListener('change', async (e) => {
+  const id = e.target.value;
+  if (!id) return;
+  chatSessionId = id;
+  // Load session messages
+  const sessions = await api('sessions');
+  const session = sessions.find(s => s.id === id);
+  chatContexts = session?.contexts || [];
+  // Reload messages by loading session data
+  $('#chat-messages').innerHTML = '';
+  // We need the full session messages - fetch by resuming
+  try {
+    const res = await fetch(`/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: id, message: '' }),
+    });
+    // This will error but it resumes the session in memory
+  } catch {}
+  updateContextPills();
+  toast(`Switched to session ${id}`);
+});
+
+async function updateContextPills() {
+  const pills = $('#chat-context-pills');
+  const allCtx = await api('contexts');
+  pills.innerHTML = '';
+
+  for (const name of chatContexts) {
+    const pill = document.createElement('span');
+    pill.className = 'pill';
+    pill.innerHTML = `${name} <span class="x">x</span>`;
+    pill.querySelector('.x').addEventListener('click', async () => {
+      if (!chatSessionId) return;
+      await api('chat/context', { method: 'POST', body: { sessionId: chatSessionId, action: 'unload', name } });
+      chatContexts = chatContexts.filter(c => c !== name);
+      updateContextPills();
+    });
+    pills.appendChild(pill);
+  }
+
+  // Add button
+  const addPill = document.createElement('span');
+  addPill.className = 'pill add';
+  addPill.textContent = '+ context';
+  addPill.addEventListener('click', () => {
+    const available = allCtx.filter(c => !chatContexts.includes(c.name));
+    if (available.length === 0) { toast('No more contexts'); return; }
+    const name = prompt('Load context:\n' + available.map(c => `  ${c.name} (~${c.tokens} tok)`).join('\n') + '\n\nEnter name:');
+    if (!name || !available.find(c => c.name === name)) return;
+    if (!chatSessionId) { toast('Create a session first'); return; }
+    api('chat/context', { method: 'POST', body: { sessionId: chatSessionId, action: 'load', name } }).then(() => {
+      chatContexts.push(name);
+      updateContextPills();
+    });
+  });
+  pills.appendChild(addPill);
+}
+
+function renderMarkdownLite(text) {
+  return text
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)/gm, '&bull; $1')
+    .replace(/\n/g, '<br>');
+}
+
+function addMessage(role, content) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = renderMarkdownLite(content);
+  $('#chat-messages').appendChild(div);
+  $('#chat-messages').scrollTop = $('#chat-messages').scrollHeight;
+  return div;
+}
+
+async function sendChat() {
+  const input = $('#chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+  if (!chatSessionId) {
+    const data = await api('chat/new', { method: 'POST' });
+    chatSessionId = data.id;
+    initChat();
+  }
+
+  addMessage('user', message);
+  input.value = '';
+
+  let assistantDiv = addMessage('assistant', '');
+  let fullText = '';
+
+  const TOOL_ICONS = {
+    search_vault: '\u{1F50D}', read_file: '\u{1F4D6}', write_file: '\u270F\uFE0F',
+    list_files: '\u{1F4C1}', journal_append: '\u{1F4DD}', journal_read: '\u{1F4C5}',
+    find_recent_files: '\u{1F550}', list_contexts: '\u{1F4DA}', load_context: '\u{1F517}',
+    spawn_subagent: '\u{1F916}', check_email: '\u{1F4E7}', read_email: '\u{1F4E8}',
+    send_email: '\u{1F4E4}', store_credential: '\u{1F511}', get_credential: '\u{1F511}',
+    create_skill: '\u{1F4DA}', list_skills: '\u{1F4CB}', load_skill: '\u{1F4D6}',
+    delete_skill: '\u{1F5D1}', create_tool: '\u{1F527}', list_custom_tools: '\u{1F9F0}',
+    view_tool_source: '\u{1F4C4}', delete_tool: '\u{1F5D1}',
+    create_cron: '\u{23F0}', list_crons: '\u{1F4CB}', update_cron: '\u{1F504}',
+    enable_cron: '\u2705', disable_cron: '\u23F8\uFE0F', delete_cron: '\u{1F5D1}',
+  };
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: chatSessionId, message }),
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const event = JSON.parse(line.slice(6));
+          if (event.type === 'text') {
+            fullText += event.text;
+            assistantDiv.innerHTML = renderMarkdownLite(fullText);
+            $('#chat-messages').scrollTop = $('#chat-messages').scrollHeight;
+          } else if (event.type === 'tool_start') {
+            const icon = TOOL_ICONS[event.name] || '\u26A1';
+            const argsStr = Object.entries(event.arguments || {}).map(([k,v]) => `${k}=${typeof v === 'string' ? v.slice(0,40) : v}`).join(', ');
+            const toolDiv = document.createElement('div');
+            toolDiv.className = 'tool-activity';
+            toolDiv.innerHTML = `${icon} <span class="tool-name">${event.name}</span>(${argsStr})`;
+            $('#chat-messages').appendChild(toolDiv);
+            $('#chat-messages').scrollTop = $('#chat-messages').scrollHeight;
+          } else if (event.type === 'tool_result') {
+            const preview = (event.result || '').split('\n').slice(0,2).join(' ').slice(0,120);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'tool-activity';
+            resultDiv.innerHTML = `\u2192 <span class="tool-result">${preview}</span>`;
+            $('#chat-messages').appendChild(resultDiv);
+            // Start a new assistant message div for the next text
+            fullText = '';
+            assistantDiv = addMessage('assistant', '');
+          } else if (event.type === 'error') {
+            fullText += `\n[Error: ${event.error}]`;
+            assistantDiv.innerHTML = renderMarkdownLite(fullText);
+          }
+        } catch {}
+      }
+    }
+    // Remove empty assistant div if no text was added
+    if (!fullText.trim() && assistantDiv.parentNode) {
+      assistantDiv.parentNode.removeChild(assistantDiv);
+    }
+  } catch (err) {
+    assistantDiv.innerHTML = renderMarkdownLite(`[Error: ${err.message}]`);
+  }
+}
+
+$('#chat-send').addEventListener('click', sendChat);
+$('#chat-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+// --- Folder Browser ---
+let browseTarget = null;
+let browseCurrent = '';
+
+async function openBrowse(inputId, startPath) {
+  browseTarget = inputId;
+  const modal = $('#browse-modal');
+  modal.classList.add('show');
+  await loadBrowse(startPath || $(inputId).value || '~');
+}
+
+async function loadBrowse(path) {
+  const data = await api(`browse?path=${encodeURIComponent(path)}`);
+  browseCurrent = data.current;
+  $('#browse-path').textContent = data.current;
+
+  // Bookmarks
+  const bm = $('#browse-bookmarks');
+  bm.innerHTML = '';
+  if (data.bookmarks) {
+    for (const b of data.bookmarks) {
+      const btn = document.createElement('button');
+      btn.className = 'btn small secondary';
+      btn.textContent = b.label;
+      btn.style.fontSize = '11px';
+      btn.addEventListener('click', () => loadBrowse(b.path));
+      bm.appendChild(btn);
+    }
+  }
+
+  // Folder list
+  const list = $('#browse-list');
+  list.innerHTML = '';
+
+  // Parent directory
+  const parent = document.createElement('div');
+  parent.className = 'folder-item parent';
+  parent.innerHTML = '<span class="icon">..</span> <span>Go up</span>';
+  parent.addEventListener('click', () => loadBrowse(data.parent));
+  list.appendChild(parent);
+
+  // Subdirectories
+  for (const entry of data.entries) {
+    const item = document.createElement('div');
+    item.className = 'folder-item';
+    item.innerHTML = `<span class="icon">/</span> <span>${entry.name}</span>`;
+    item.addEventListener('click', () => loadBrowse(entry.path));
+    list.appendChild(item);
+  }
+}
+
+$('#browse-select').addEventListener('click', () => {
+  if (browseTarget) $(browseTarget).value = browseCurrent;
+  $('#browse-modal').classList.remove('show');
+});
+$('#browse-cancel').addEventListener('click', () => $('#browse-modal').classList.remove('show'));
+$('#browse-close').addEventListener('click', () => $('#browse-modal').classList.remove('show'));
+$('#cfg-vault-browse').addEventListener('click', () => openBrowse('#cfg-vault'));
+
+// --- Init ---
+loadDashboard();
+</script>
+</body>
+</html>
