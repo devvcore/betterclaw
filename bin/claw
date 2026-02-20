@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --use-system-ca
+#!/usr/bin/env node
 
 import { startCLI } from '../lib/channels/cli.js';
 import { runHeartbeatChannel } from '../lib/channels/heartbeat-channel.js';
