@@ -171,6 +171,12 @@ async function main() {
       break;
     }
 
+    case 'doctor': {
+      const { runDoctor } = await import('../lib/doctor.js');
+      await runDoctor(args);
+      break;
+    }
+
     case 'version':
       console.log('betterclaw v0.1.0');
       break;
@@ -199,6 +205,9 @@ Usage:
   claw sessions               List saved sessions
   claw creds list             Show configured credentials
   claw creds set <key> <val>  Store a credential in Keychain
+  claw doctor                 Diagnose and report issues
+  claw doctor --fix           Auto-fix (quarantine bad tools, etc.)
+  claw doctor --reset         Nuclear reset (clear tools, reset config)
   claw version                Show version`);
   }
 }

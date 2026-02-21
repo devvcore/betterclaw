@@ -31,12 +31,11 @@ const defaults = {
   skillsDir: 'Resources/Skills',
 
   // Model roles → provider + model
+  // Only 'default' is set here. Other roles (router, quick, deep, browser)
+  // are left undefined so they fall back to 'default' via createProvider().
+  // This prevents crashes when a new user doesn't have every provider configured.
   models: {
-    router:  { provider: 'ollama',    model: 'llama3.2:3b' },
-    quick:   { provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
     default: { provider: 'anthropic', model: 'claude-sonnet-4-5-20250514' },
-    deep:    { provider: 'openai',    model: 'o3' },
-    browser: { provider: 'openrouter', model: 'google/gemini-3-flash-preview' },
   },
 
   // Compaction
