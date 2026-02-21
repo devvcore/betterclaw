@@ -1,12 +1,12 @@
 # BetterBot
 
-A zero-dependency AI agent framework that lives in your Obsidian vault. Your agent (Raya) manages your calendar, email, tasks, and projects autonomously — building her own tools, scheduling her own crons, and waking herself up when there's work to do.
+A zero-dependency AI agent framework that lives in your Obsidian vault. Name your agent, give it a personality, and let it manage your calendar, email, tasks, and projects autonomously — building its own tools, scheduling its own crons, and waking itself up when there's work to do.
 
 ## What it does
 
-- **Persistent agent** — Raya reads and writes to your Obsidian vault. The daily journal is her memory. Context files are her personality.
+- **Persistent agent** — Your agent reads and writes to your Obsidian vault. The daily journal is its memory. Context files are its personality. You name it, you shape it.
 - **3-tier heartbeat** — Checks for new tasks every 15 minutes. Cheap triage decides what matters, a lightweight agent handles simple stuff, and the full agent escalates for complex work.
-- **Self-building tools** — Raya creates her own tools as ES module files. Need a Telegram bot? She builds it. Need calendar access? She writes the AppleScript wrapper.
+- **Self-building tools** — The agent creates its own tools as ES module files. Need a Telegram bot? It builds it. Need calendar access? It writes the AppleScript wrapper.
 - **Do mode** — For big tasks ("build me an app"), the agent plans subtasks, tracks progress, and spawns sub-agents with full tool access to parallelize work.
 - **Multi-channel** — Web panel, Telegram, CLI. Notifications route to wherever you are.
 - **Zero dependencies** — Node.js built-ins, `fetch()`, no npm packages. Runs on a single `node` process.
@@ -56,15 +56,15 @@ Models are configured by role:
 
 ## Key concepts
 
-**Vault** — Your Obsidian vault. Raya reads/writes notes, journal entries, and memories here.
+**Vault** — Your Obsidian vault. The agent reads/writes notes, journal entries, and memories here.
 
 **Workspace** — Where code projects live. Use `ws://` prefix in file paths.
 
-**Contexts** — Markdown files that get injected into the system prompt. Auto-loaded ones define Raya's identity. Others load on demand (`load_context("coding")`).
+**Contexts** — Markdown files that get injected into the system prompt. Auto-loaded ones define the agent's identity. Others load on demand (`load_context("coding")`).
 
-**Custom tools** — Raya builds tools as ES module files in `~/.betterclaw/custom-tools/`. They persist across sessions and auto-load on startup.
+**Custom tools** — The agent builds tools as ES module files in `~/.betterclaw/custom-tools/`. They persist across sessions and auto-load on startup.
 
-**Skills** — Markdown docs describing multi-step procedures. Raya creates and references them for repeatable workflows.
+**Skills** — Markdown docs describing multi-step procedures. The agent creates and references them for repeatable workflows.
 
 **Task plan** — In-session self-organization. The agent breaks big tasks into subtasks, tracks progress, and spawns sub-agents for parallel work.
 
