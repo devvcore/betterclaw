@@ -15,7 +15,7 @@ A zero-dependency AI agent framework that lives in your Obsidian vault. Name you
 
 ```bash
 # Install
-curl -sL https://raw.githubusercontent.com/devvcore/betterclaw-install/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/mylesndavid/betterbot/main/install.sh | bash
 
 # Configure
 source ~/.zshrc && claw init
