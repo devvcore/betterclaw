@@ -25,4 +25,4 @@ All use Notion REST API v2022-06-28:
 - Headers: `Authorization: Bearer {key}`, `Notion-Version: 2022-06-28`
 - Use `get_credential("notion_api_key")` inside tools
 
-Or tell the user to run: `claw setup notion`
+Or tell the user to run: `betterbot setup notion`

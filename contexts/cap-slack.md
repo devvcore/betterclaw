@@ -22,4 +22,4 @@ Send messages and read channels in Slack via Bot API.
 
 Use `get_credential("slack_bot_token")` as Bearer token inside tools.
 
-Or tell the user to run: `claw setup slack`
+Or tell the user to run: `betterbot setup slack`

@@ -6,7 +6,7 @@
 set -e
 
 INSTALL_DIR="$HOME/.betterclaw/app"
-BIN_LINK="/usr/local/bin/claw"
+BIN_LINK="/usr/local/bin/betterbot"
 
 echo ""
 echo "  ╔══════════════════════════════╗"
@@ -35,7 +35,7 @@ fi
 echo "✓ Node.js $(node -v)"
 
 # Download or copy
-if [ -f "./bin/claw" ]; then
+if [ -f "./bin/betterbot" ]; then
   # Running from extracted tarball
   SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
   echo "✓ Installing from local directory"
@@ -52,7 +52,7 @@ echo "📦 Installing to $INSTALL_DIR..."
 rm -rf "$INSTALL_DIR"
 mkdir -p "$INSTALL_DIR"
 cp -R "$SRC_DIR"/* "$INSTALL_DIR"/
-chmod +x "$INSTALL_DIR/bin/claw"
+chmod +x "$INSTALL_DIR/bin/betterbot"
 
 # Remove quarantine (macOS)
 if command -v xattr &>/dev/null; then
@@ -60,15 +60,15 @@ if command -v xattr &>/dev/null; then
 fi
 
 # Symlink
-echo "🔗 Linking claw command..."
+echo "🔗 Linking betterbot command..."
 if [ -w "/usr/local/bin" ]; then
-  ln -sf "$INSTALL_DIR/bin/claw" "$BIN_LINK"
+  ln -sf "$INSTALL_DIR/bin/betterbot" "$BIN_LINK"
 else
-  sudo ln -sf "$INSTALL_DIR/bin/claw" "$BIN_LINK"
+  sudo ln -sf "$INSTALL_DIR/bin/betterbot" "$BIN_LINK"
 fi
 
 echo ""
 echo "✅ BetterBot installed!"
 echo ""
-echo "   Run:  claw init"
+echo "   Run:  betterbot init"
 echo ""

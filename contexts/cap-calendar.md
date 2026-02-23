@@ -43,4 +43,4 @@ end tell
 - Detect available calendars first with a `get_calendar_names` helper
 - Ask the user which calendar to use as primary, or default to the first one
 - If calendar tools timeout, see Prerequisites above — macOS permissions are the #1 cause
-- Or tell the user to run: `claw setup calendar`
+- Or tell the user to run: `betterbot setup calendar`

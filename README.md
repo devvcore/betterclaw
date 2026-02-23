@@ -18,19 +18,19 @@ A zero-dependency AI agent framework that lives in your Obsidian vault. Name you
 curl -sL https://raw.githubusercontent.com/mylesndavid/betterbot/main/install.sh | bash
 
 # Configure
-source ~/.zshrc && claw init
+source ~/.zshrc && betterbot init
 
 # Start the gateway (panel + telegram + heartbeat + crons)
-claw gateway
+betterbot gateway
 
 # Or just chat
-claw chat
+betterbot chat
 ```
 
 ## Architecture
 
 ```
-bin/claw              CLI entry point
+bin/betterbot              CLI entry point
 lib/gateway.js        Persistent service: panel + telegram + heartbeat + crons
 lib/heartbeat.js      3-tier: cheap triage -> disposable agent -> full Raya
 lib/session.js        Conversation sessions with tool loops and task planning

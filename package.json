@@ -4,7 +4,7 @@
   "description": "Context-first AI assistant framework. Obsidian-native, model-agnostic.",
   "type": "module",
   "bin": {
-    "claw": "./bin/claw"
+    "betterbot": "./bin/betterbot"
   },
   "engines": {
     "node": ">=20.0.0"

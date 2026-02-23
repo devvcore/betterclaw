@@ -2135,7 +2135,7 @@ async function loadGatewaySettings() {
       Telegram: ${gw.telegram ? '<span class="badge ok">Connected</span>' : '<span class="badge no">Off</span>'}${cronInfo}
     `;
   } else {
-    gwDiv.innerHTML = '<span class="badge no">Not Running</span> \u2014 start with <code style="background:var(--bg);padding:2px 6px;border-radius:3px;font-family:var(--mono);">claw gateway</code>';
+    gwDiv.innerHTML = '<span class="badge no">Not Running</span> \u2014 start with <code style="background:var(--bg);padding:2px 6px;border-radius:3px;font-family:var(--mono);">betterbot gateway</code>';
   }
 
   const hb = cfg.current?.heartbeat || {};

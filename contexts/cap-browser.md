@@ -63,7 +63,7 @@ In `~/.betterclaw/config.json`:
 Chrome is usually already installed. To verify:
 
 ```bash
-claw setup browser
+betterbot setup browser
 ```
 
 ## Usage examples

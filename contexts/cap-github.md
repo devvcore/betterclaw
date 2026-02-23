@@ -16,4 +16,4 @@ Follow the prompts to authenticate via browser or token.
 ## Notes
 - No custom tool needed — use `spawn_subagent` with shell commands
 - The heartbeat already checks GitHub notifications if configured
-- Or tell the user to run: `claw setup github`
+- Or tell the user to run: `betterbot setup github`

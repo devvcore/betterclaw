@@ -25,4 +25,4 @@ end tell
 
 ## Notes
 - macOS may prompt for Reminders access permission on first use
-- Or tell the user to run: `claw setup reminders`
+- Or tell the user to run: `betterbot setup reminders`

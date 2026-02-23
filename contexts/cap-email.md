@@ -19,7 +19,7 @@ Gmail via IMAP/SMTP using App Passwords.
 3. Store both:
    - `store_credential("google_email", "user@gmail.com")`
    - `store_credential("google_app_password", "xxxx xxxx xxxx xxxx")`
-4. Or tell the user to run: `claw setup email`
+4. Or tell the user to run: `betterbot setup email`
 
 ## Tools Available When Active
 - `check_email(unread_only?, limit?)` — check inbox

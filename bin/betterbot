@@ -63,7 +63,7 @@ async function main() {
         const { runSetup } = await import('../lib/setup.js');
         await runSetup('telegram');
       } else {
-        console.log('Usage: claw telegram setup  (or: claw setup telegram)');
+        console.log('Usage: betterbot telegram setup  (or: betterbot setup telegram)');
       }
       break;
     }
@@ -83,7 +83,7 @@ async function main() {
         }
         case 'show': {
           const name = args[1];
-          if (!name) { console.error('Usage: claw ctx show <name>'); break; }
+          if (!name) { console.error('Usage: betterbot ctx show <name>'); break; }
           const ctx = await loadContext(name);
           if (ctx) {
             console.log(ctx.content);
@@ -94,20 +94,20 @@ async function main() {
         }
         case 'new': {
           const name = args[1];
-          if (!name) { console.error('Usage: claw ctx new <name>'); break; }
+          if (!name) { console.error('Usage: betterbot ctx new <name>'); break; }
           const path = await createContext(name);
           console.log(`Created: ${path}`);
           break;
         }
         default:
-          console.log('Usage: claw ctx <list|show|new> [name]');
+          console.log('Usage: betterbot ctx <list|show|new> [name]');
       }
       break;
     }
 
     case 'search': {
       const query = args.join(' ');
-      if (!query) { console.error('Usage: claw search <query>'); break; }
+      if (!query) { console.error('Usage: betterbot search <query>'); break; }
       const results = await search(query);
       if (results.length === 0) {
         console.log('No matches.');
@@ -137,7 +137,7 @@ async function main() {
       if (sub === 'set') {
         const name = args[1];
         const value = args[2];
-        if (!name || !value) { console.error('Usage: claw creds set <name> <value>'); break; }
+        if (!name || !value) { console.error('Usage: betterbot creds set <name> <value>'); break; }
         await setCredential(name, value);
         console.log(`Stored: ${name}`);
       } else if (sub === 'list') {
@@ -146,7 +146,7 @@ async function main() {
           console.log(`  ${c.name}: ${c.configured ? '✓' : '✗'}`);
         }
       } else {
-        console.log('Usage: claw creds <list|set> [name] [value]');
+        console.log('Usage: betterbot creds <list|set> [name] [value]');
       }
       break;
     }
@@ -158,10 +158,10 @@ async function main() {
         const role = args[1];
         const spec = args[2];
         if (!role || !spec) {
-          console.error('Usage: claw model set <role> <provider/model>');
+          console.error('Usage: betterbot model set <role> <provider/model>');
           console.error('  Roles: router, quick, default, deep');
-          console.error('  Example: claw model set default anthropic/claude-sonnet-4-5-20250514');
-          console.error('  Example: claw model set default openrouter/anthropic/claude-sonnet-4-5-20250514');
+          console.error('  Example: betterbot model set default anthropic/claude-sonnet-4-5-20250514');
+          console.error('  Example: betterbot model set default openrouter/anthropic/claude-sonnet-4-5-20250514');
           break;
         }
         await setModel(role, spec);
@@ -185,30 +185,30 @@ async function main() {
       console.log(`betterbot v0.1.0
 
 Usage:
-  claw init                   Interactive setup wizard
-  claw setup                  Set up capabilities (telegram, email, search...)
-  claw setup <name>           Set up a specific capability
-  claw gateway                Start gateway (panel + telegram + heartbeat + crons)
-  claw gateway install        Install as macOS LaunchAgent (auto-start)
-  claw gateway uninstall      Remove LaunchAgent
-  claw gateway status         Check if gateway is running
-  claw gateway logs           Tail gateway logs
-  claw panel [--port N]       Open control panel (default :3333)
-  claw chat [--new]           Interactive chat with Raya
-  claw heartbeat              Run heartbeat check (for cron)
-  claw model                  Show current model config
-  claw model set <role> <p/m> Change a model (e.g. default anthropic/claude-sonnet-4-5-20250514)
-  claw ctx list               List available contexts
-  claw ctx show <name>        Show context content
-  claw ctx new <name>         Create a new context file
-  claw search <query>         Search Obsidian vault
-  claw sessions               List saved sessions
-  claw creds list             Show configured credentials
-  claw creds set <key> <val>  Store a credential in Keychain
-  claw doctor                 Diagnose and report issues
-  claw doctor --fix           Auto-fix (quarantine bad tools, etc.)
-  claw doctor --reset         Nuclear reset (clear tools, reset config)
-  claw version                Show version`);
+  betterbot init                   Interactive setup wizard
+  betterbot setup                  Set up capabilities (telegram, email, search...)
+  betterbot setup <name>           Set up a specific capability
+  betterbot gateway                Start gateway (panel + telegram + heartbeat + crons)
+  betterbot gateway install        Install as macOS LaunchAgent (auto-start)
+  betterbot gateway uninstall      Remove LaunchAgent
+  betterbot gateway status         Check if gateway is running
+  betterbot gateway logs           Tail gateway logs
+  betterbot panel [--port N]       Open control panel (default :3333)
+  betterbot chat [--new]           Interactive chat with Raya
+  betterbot heartbeat              Run heartbeat check (for cron)
+  betterbot model                  Show current model config
+  betterbot model set <role> <p/m> Change a model (e.g. default anthropic/claude-sonnet-4-5-20250514)
+  betterbot ctx list               List available contexts
+  betterbot ctx show <name>        Show context content
+  betterbot ctx new <name>         Create a new context file
+  betterbot search <query>         Search Obsidian vault
+  betterbot sessions               List saved sessions
+  betterbot creds list             Show configured credentials
+  betterbot creds set <key> <val>  Store a credential in Keychain
+  betterbot doctor                 Diagnose and report issues
+  betterbot doctor --fix           Auto-fix (quarantine bad tools, etc.)
+  betterbot doctor --reset         Nuclear reset (clear tools, reset config)
+  betterbot version                Show version`);
   }
 }
 

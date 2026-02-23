@@ -23,4 +23,4 @@ You CANNOT scrape Google directly with fetch() — it returns useless HTML/JS. Y
 
 **Brave:** GET `https://api.search.brave.com/res/v1/web/search?q={query}` with header `X-Subscription-Token` from `get_credential("brave_search_key")`. Return results.
 
-Or tell the user to run: `claw setup search`
+Or tell the user to run: `betterbot setup search`

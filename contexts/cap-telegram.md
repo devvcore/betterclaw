@@ -24,7 +24,7 @@ Telegram bot for receiving and sending messages.
    ```json
    { "telegram": { "allowedChatIds": ["CHAT_ID"] } }
    ```
-6. Or tell the user to run: `claw setup telegram`
+6. Or tell the user to run: `betterbot setup telegram`
 
 ## Sending Messages
 The `send_telegram_raw` tool fetches credentials internally — just call:
@@ -34,5 +34,5 @@ send_telegram_raw(message="Your message here")
 Do NOT pass token or chat_id as parameters.
 
 ## Notes
-- Gateway must be running for the bot to receive messages (`claw gateway`)
+- Gateway must be running for the bot to receive messages (`betterbot gateway`)
 - Only whitelisted chat IDs can interact with the bot
