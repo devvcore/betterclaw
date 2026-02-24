@@ -18,6 +18,7 @@ const defaults = {
   workspaceDir: join(home, '.betterclaw/workspace'),
   contextsDir: join(__dirname, 'contexts'),
   outfitsDir: join(home, '.betterclaw/outfits'),
+  graphDir: join(home, '.betterclaw/graph'),
 
   // Vault folders (PARA + agent)
   para: {
