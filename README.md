@@ -70,7 +70,7 @@ Models are configured by role:
 
 ## Key concepts
 
-**Vault** — Your Obsidian vault. The agent reads/writes notes, journal entries, and memories here. The daily journal is the primary write target.
+**Vault** — Your Obsidian vault. The human-facing layer — journal entries, project docs, research briefs, skills. The daily journal is the primary write target. Organized as Inbox, Projects, Resources, and Daily.
 
 **Workspace** — Where code projects live (`~/.betterclaw/workspace/`). Use `ws://` prefix in file paths to target it.
 
@@ -80,7 +80,7 @@ Models are configured by role:
 
 **Personality** — The agent's self-editable identity file at `~/.betterclaw/personality.md`. Separate from the core identity (which is fixed by the developer). The agent defines its own voice, tone, quirks, constraints, and rules here using `edit_personality()` or `add_personality_rule()`. Persists across all sessions.
 
-**Graph memory** — A persistent knowledge graph at `~/.betterclaw/graph/`. When sessions compact, a cheap LLM extracts entities, people, decisions, and relationships into graph nodes and edges. `recall()` searches the graph first, then falls back to flat memory files. Connections build up over time across sessions.
+**Graph memory** — The agent's brain. A persistent knowledge graph at `~/.betterclaw/graph/`. All memory lives here — `remember()` writes graph nodes, `recall()` searches them. Compaction summaries automatically extract entities, people, decisions, and relationships into connected nodes. The graph is the single source of truth for what the agent knows.
 
 **Custom tools** — The agent builds tools as ES module files in `~/.betterclaw/custom-tools/`. They persist across sessions and auto-load on startup. Each tool is validated on creation.
 

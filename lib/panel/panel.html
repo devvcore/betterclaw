@@ -1541,6 +1541,7 @@
         <div class="graph-main">
           <canvas id="graph-canvas"></canvas>
           <div class="graph-toolbar">
+            <button id="graph-reload-btn" title="Reload graph from disk">&#8635;</button>
             <button id="graph-center-btn" title="Center view">&#8982;</button>
             <button id="graph-zoom-out" title="Zoom out">&minus;</button>
             <span class="zoom-label" id="graph-zoom-label">100%</span>
@@ -3010,6 +3011,11 @@ $$('.graph-filter-checkbox input').forEach(checkbox => {
 });
 
 // Toolbar handlers
+$('#graph-reload-btn').addEventListener('click', async () => {
+  await api('graph/reload', { method: 'POST' });
+  await loadGraphView();
+  toast('Graph reloaded');
+});
 $('#graph-center-btn').addEventListener('click', () => { centerView(); drawGraph(); });
 $('#graph-zoom-in').addEventListener('click', () => {
   graphViz.zoom = Math.min(4, graphViz.zoom * 1.3);

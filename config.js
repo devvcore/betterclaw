@@ -20,16 +20,13 @@ const defaults = {
   outfitsDir: join(home, '.betterclaw/outfits'),
   graphDir: join(home, '.betterclaw/graph'),
 
-  // Vault folders (PARA + agent)
+  // Vault folders
   para: {
     inbox:     '00_Inbox',
     projects:  'Projects',
-    areas:     'Areas',
     resources: 'Resources',
-    archive:   'Archive',
   },
   dailyNotesDir: 'Daily',
-  memoriesDir: 'Memories',
   skillsDir: 'Resources/Skills',
 
   // Model roles → provider + model
